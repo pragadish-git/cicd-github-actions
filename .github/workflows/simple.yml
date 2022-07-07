@@ -21,9 +21,9 @@ jobs:
           done< <(jq -j 'to_entries|.[] | "\(.key) \(.value)\t"' <<< "$SECRETS_CONTEXT")
         env:
           SECRETS_CONTEXT: ${{ toJson(secrets) }}
-      - name: env check
+      - name: Checkout 
+        uses: actions/checkout@v1
+      - name: List Files After Checkout
         run: |
-          echo $SAMPLE_URL
-          echo $GITHUB_EVENT_NAME
-          echo ${{ secrets.SAMPLE_URL }} >> sample.txt
-          cat sample.txt
+          pwd
+          ls -a
