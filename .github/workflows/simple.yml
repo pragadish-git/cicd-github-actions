@@ -19,9 +19,7 @@ jobs:
               echo $key'='$value >> $GITHUB_ENV
             fi
           done< <(jq -j 'to_entries|.[] | "\(.key) \(.value)\t"' <<< "$SECRETS_CONTEXT")
-
-          echo $SAMPLE_URL
         env:
           SECRETS_CONTEXT: ${{ toJson(secrets) }}
       - name: env check
-        run: echo $SAMPLE_URL
+        run: env
