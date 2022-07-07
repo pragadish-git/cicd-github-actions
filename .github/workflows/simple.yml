@@ -3,11 +3,9 @@ name: Test Workflow
 on: [push]
 
 jobs:
-  run-shell-command:
+  run-build:
     runs-on: ubuntu-latest
     steps:
-      - name: echo
-        run: echo "Hello world!"
       - name: view secrets context
         run: |
           while read -d $'\t' -r key value; do
@@ -21,10 +19,11 @@ jobs:
           done< <(jq -j 'to_entries|.[] | "\(.key) \(.value)\t"' <<< "$SECRETS_CONTEXT")
         env:
           SECRETS_CONTEXT: ${{ toJson(secrets) }}
-      - name: Checkout 
-        uses: actions/checkout@v1
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: List Files After Checkout
         run: |
           pwd
           ls -a
           echo "$(cat extensions.json)"
+          perl -V
