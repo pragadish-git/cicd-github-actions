@@ -25,3 +25,4 @@ jobs:
         run: |
           echo $SAMPLE_URL
           echo $GITHUB_EVENT_NAME
+          echo ${{ secrets.SAMPLE_URL }}
