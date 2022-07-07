@@ -33,6 +33,6 @@ jobs:
           accept: 200,201,204
           headers: '{ "Content-Type": "application/json", "Accept": "application/json" }'
           basic-auth-token: ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}
-          body: tmp_extensions.json
+          body: ./tmp_extensions.json
           timeout: 20000
           log-response: true
