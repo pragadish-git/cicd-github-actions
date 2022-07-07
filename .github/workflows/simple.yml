@@ -22,4 +22,6 @@ jobs:
         env:
           SECRETS_CONTEXT: ${{ toJson(secrets) }}
       - name: env check
-        run: env
+        run: |
+          echo $SAMPLE_URL
+          echo $GITHUB_EVENT_NAME
