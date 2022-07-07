@@ -9,8 +9,19 @@ jobs:
       - name: echo
         run: echo "Hello world!"
       - name: view secrets context
-        run: echo "$SECRETS_CONTEXT"
+        run: |
+          while read -d $'\t' -r key value; do
+            if [[ $key == *$'\n'* ]]; then
+              echo $key'<<EOF' >> $GITHUB_ENV
+              echo "$value" >> $GITHUB_ENV
+              echo 'EOF' >> $GITHUB_ENV
+            elif [[ ! -z $key ]]; then
+              echo $key'='$value >> $GITHUB_ENV
+            fi
+          done< <(jq -j 'to_entries|.[] | "\(.key) \(.value)\t"' <<< "$SECRETS_CONTEXT")
+
+          echo $SAMPLE_URL
         env:
           SECRETS_CONTEXT: ${{ toJson(secrets) }}
-      - name: python
-        run: python --version
+      - name: env check
+        run: echo $SAMPLE_URL
