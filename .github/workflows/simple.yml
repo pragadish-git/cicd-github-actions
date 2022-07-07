@@ -26,13 +26,15 @@ jobs:
           cat extensions.json
           perl -pe 's/\$([_A-Z]+)/$ENV{$1}/g' < extensions.json > tmp_extensions.json
       - name: "call extension api using curl"
-        uses: indiesdev/curl@v1.1
-        with:
-          url: https://c01-sg.integrate-test.boomi.com/ws/rest/queryPackagedComponent/v1/PackagedComponent/
-          method: "POST"
-          accept: 200,201,204
-          headers: '{ "Content-Type": "application/json", "Accept": "application/json" }'
-          basic-auth-token: ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}
-          body: ./tmp_extensions.json
-          timeout: 20000
-          log-response: true
+        run: |
+          CURL_RESPONSE=`curl --write-out '%{http_code}' \
+          -X POST -k -s \
+          -H 'Content-Type: application/json' \
+          -H 'Accept: application/json' \
+          -H 'Authorization: Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}' \
+          -i 'https://c01-sg.integrate-test.boomi.com/ws/rest/queryPackagedComponent/v1/PackagedComponent/' \
+          --data @tmp_extensions.json`
+
+          http_code=${CURL_RESPONSE: -3}; echo "$http_code" 
+          content=${CURL_RESPONSE}; echo "$content"
+          if [ $http_code != "200" || $http_code != "201" ] then echo "FAILURE" else echo "SUCCESS" fi
