@@ -8,7 +8,7 @@ jobs:
     steps:
       - name: echo
         run: echo "Hello world!"
-      - name: multiline script
-        run: |
-          node -v
-          npm -v
+      - name: view secrets context
+        run: echo "$SECRETS_CONTEXT"
+      - name: python
+        run: python --version
