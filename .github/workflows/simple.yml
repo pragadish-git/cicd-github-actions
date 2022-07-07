@@ -33,8 +33,7 @@ jobs:
           -H 'Accept: application/json' \
           -H 'Authorization: Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}' \
           -i 'https://c01-sg.integrate-test.boomi.com/ws/rest/queryPackagedComponent/v1/PackagedComponent/' \
-          --data @tmp_extensions.json
-          -o response.txt`
+          --data @tmp_extensions.json`
 
           http_code=${CURL_RESPONSE: -3}; echo http status code - $http_code
           content=${CURL_RESPONSE}; echo response - $content
