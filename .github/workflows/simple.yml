@@ -1,0 +1,14 @@
+name: Test Workflow
+
+on: [push]
+
+jobs:
+  run-shell-command:
+    runs-on: ubuntu-latest
+    steps:
+      - name: echo
+        run: echo "Hello world!"
+      - name: multiline script
+        run: |
+          java -version
+          javac -version
