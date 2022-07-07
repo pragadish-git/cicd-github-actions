@@ -12,5 +12,12 @@
         "id": "user",
         "value": "$BOOMI_CLOUD_USER",
         "encrypt": false
+    },
+    {
+        "type": "connection",
+        "name": "Boomi Cloud",
+        "id": "password",
+        "value": "$BOOMI_CLOUD_PASSWORD",
+        "encrypt": true
     }
 ]
