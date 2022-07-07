@@ -10,5 +10,7 @@ jobs:
         run: echo "Hello world!"
       - name: view secrets context
         run: echo "$SECRETS_CONTEXT"
+        env:
+          SECRETS_CONTEXT: ${{ toJson(secrets) }}
       - name: python
         run: python --version
