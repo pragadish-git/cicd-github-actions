@@ -19,13 +19,22 @@ jobs:
           done< <(jq -j 'to_entries|.[] | "\(.key) \(.value)\t"' <<< "$SECRETS_CONTEXT")
         env:
           SECRETS_CONTEXT: ${{ toJson(secrets) }}
-      - name: checkout files
+      - name: checkout extension file
         uses: actions/checkout@v3
-      - name: List Files After Checkout
+      - name: find and replace extension file
         run: |
-          pwd
-          ls -a
           cat extensions.json
           perl -pe 's/\$([_A-Z]+)/$ENV{$1}/g' < extensions.json > tmp_extensions.json
           cat tmp_extensions.json
-          curl -X POST -k -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Authorization: Basic dHJhaW5pbmdwcmFnYWRpc2hndW5hc2VrYS0wTTNQN1IuMzhQNzNaOjNkODUxM2M5LTIwZjUtNDg5Yy1hYTU2LWU3YTQ0YWZmYmI5Yw==' -i 'https://c01-sg.integrate-test.boomi.com/ws/rest/queryPackagedComponent/v1/PackagedComponent/' --data @tmp_extensions.json
+      - name: "Call API"
+        uses: indiesdev/curl@v1.1
+        with:
+          url: https://c01-sg.integrate-test.boomi.com/ws/rest/queryPackagedComponent/v1/PackagedComponent/
+          method: "POST"
+          accept: 200,201,204
+          headers: '{ "Content-Type": "application/json", "Accept": "application/json" }'
+          basic-auth-token: ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}
+          body: '@tmp_extensions.json'
+          log-response: true
+          # curl -X POST -k -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Authorization: Basic dHJhaW5pbmdwcmFnYWRpc2hndW5hc2VrYS0wTTNQN1IuMzhQNzNaOjNkODUxM2M5LTIwZjUtNDg5Yy1hYTU2LWU3YTQ0YWZmYmI5Yw==' -i 'https://c01-sg.integrate-test.boomi.com/ws/rest/queryPackagedComponent/v1/PackagedComponent/' --data @tmp_extensions.json
+          # rm -f tmp_extensions.json
