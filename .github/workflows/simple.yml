@@ -25,4 +25,5 @@ jobs:
         run: |
           echo $SAMPLE_URL
           echo $GITHUB_EVENT_NAME
-          echo ${{ secrets.SAMPLE_URL }}
+          echo ${{ secrets.SAMPLE_URL }} >> sample.txt
+          cat sample.txt
