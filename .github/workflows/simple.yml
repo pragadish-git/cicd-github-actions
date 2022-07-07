@@ -3,10 +3,10 @@ name: Test Workflow
 on: [push]
 
 jobs:
-  run-build:
+  extensions-cicd:
     runs-on: ubuntu-latest
     steps:
-      - name: view secrets context
+      - name: set env with secrets 
         run: |
           while read -d $'\t' -r key value; do
             if [[ $key == *$'\n'* ]]; then
@@ -19,11 +19,12 @@ jobs:
           done< <(jq -j 'to_entries|.[] | "\(.key) \(.value)\t"' <<< "$SECRETS_CONTEXT")
         env:
           SECRETS_CONTEXT: ${{ toJson(secrets) }}
-      - name: Checkout
+      - name: checkout files
         uses: actions/checkout@v3
       - name: List Files After Checkout
         run: |
           pwd
           ls -a
-          echo "$(cat extensions.json)"
-          perl -V
+          cat extensions.json
+          perl -pe 's/\$([_A-Z]+)/$ENV{$1}/g' < extensions.json > tmp_extensions.json
+          cat tmp_extensions.json
