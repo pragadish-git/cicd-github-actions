@@ -6,7 +6,7 @@ jobs:
   extensions-cicd:
     runs-on: ubuntu-latest
     steps:
-      - name: set env with secrets 
+      - name: set env with secrets
         run: |
           while read -d $'\t' -r key value; do
             if [[ $key == *$'\n'* ]]; then
@@ -37,7 +37,7 @@ jobs:
 
           http_code=${CURL_RESPONSE: -3}; echo http status code - $http_code
           content=${CURL_RESPONSE}; echo response - $content
-          if [ $http_code != "200" || $http_code != "201" ]; then
+          if [ $http_code != "200" ] && [ $http_code != "201" ]; then
             echo "FAILURE"
             exit 1
           else
