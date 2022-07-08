@@ -36,7 +36,7 @@ jobs:
           -X POST -k -s \
           -H 'Content-Type: application/json' \
           -H 'Accept: application/json' \
-          -H 'Authorization: Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}' \
+          -H 'Authorization: Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}'  \
           -i 'https://c01-sg.integrate-test.boomi.com/ws/rest/queryPackagedComponent/v1/PackagedComponent/' \
           --data @tmp_extensions.json`
 
