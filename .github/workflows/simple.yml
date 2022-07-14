@@ -29,7 +29,7 @@ jobs:
         id: http_call
         uses: fjogeleit/http-request-action@v1
         with:
-          url: 'https://c01-sg.integrate-test.boomi.com/ws/rest/queryPackagedComponent/v1/PackagedComponent/'
+          url: 'https://c01-sg.integrate-test.boomi.com/ws/rest/updateEnvironmentExtensions/v1/EnvironmentExtensions/'
           method: 'POST'
           customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}" }'
           data: '${{ steps.replace_env.outputs.FJSON }}'
@@ -38,5 +38,3 @@ jobs:
       - name: Show response
         run: |
           echo ${{ steps.http_call.outputs.response }}
-        # run: |
-        #   echo '${{ steps.replace_env.outputs.FJSON }}'
