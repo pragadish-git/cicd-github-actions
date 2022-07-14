@@ -1,0 +1,44 @@
+name: Create Deployed Package Workflow
+
+on:
+  push:
+    paths:
+    - 'deployments.json'
+    - '.github/workflows/deployed-package.yml'
+
+jobs:
+  extensions-cicd:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set env with secrets
+      #   uses: oNaiPs/secrets-to-env-action@v1
+      #   with:
+      #     secrets: ${{ toJSON(secrets) }}
+      
+      # - name: Checkout extension file
+      #   uses: actions/checkout@v3
+
+      # - name: Read file contents
+      #   id: read_file
+      #   uses: andstor/file-reader-action@v1
+      #   with:
+      #     path: "packages.json"
+
+      # - name: Update file contents
+      #   id: update_contents
+      #   run: |
+      #     echo ::set-output name=FJSON::$(echo '{"packages": '$(echo '${{ steps.read_file.outputs.contents }}'}' | jq '. + {"environmentId": "${{ secrets.ENVIRONMENT_ID }}"}')
+      
+      # - name: Invoke api with json payload
+      #   id: http_call
+      #   uses: fjogeleit/http-request-action@v1
+      #   with:
+      #     url: 'https://c01-sg.integrate-test.boomi.com/ws/rest/cicdCreateDeployedPackage/v2/CicdDeployedPackage/'
+      #     method: 'POST'
+      #     customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
+      #     data: '${{ steps.update_contents.outputs.FJSON }}'
+      #     timeout: 20000
+      
+      # - name: Show response
+      #   run: |
+      #     echo '${{ steps.http_call.outputs.response }}'
