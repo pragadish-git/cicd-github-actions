@@ -20,8 +20,8 @@ jobs:
         with:
           path: "extensions.json"
 
-      #- name: Extension file contents
-      #  run: echo "${{ steps.read_file.outputs.contents }}"
+      - name: Extension file contents
+        run: echo "${{ steps.read_file.outputs.contents }}"
 
       - name: Replace file contents with env
         run: |
