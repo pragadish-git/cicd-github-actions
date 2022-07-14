@@ -25,7 +25,7 @@ jobs:
 
       - name: Replace file contents with env
         run: |
-          JSON=`echo ${{ steps.read_file.outputs.contents }}`
+          JSON=${{ steps.read_file.outputs.contents }}
           echo $JSON
           TEMP_JSON=$(echo $JSON | perl -pe 's/\$([_A-Z]+)/$ENV{$1}/g')
           echo "TEMP_JSON - \n$TEMP_JSON"
