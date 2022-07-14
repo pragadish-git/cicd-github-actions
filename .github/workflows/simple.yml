@@ -31,7 +31,7 @@ jobs:
         with:
           url: 'https://c01-sg.integrate-test.boomi.com/ws/rest/updateEnvironmentExtensions/v1/EnvironmentExtensions/'
           method: 'POST'
-          customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}" }'
+          customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
           data: '${{ steps.replace_env.outputs.FJSON }}'
           timeout: 20000
       
