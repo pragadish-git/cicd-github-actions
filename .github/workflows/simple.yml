@@ -32,5 +32,5 @@ jobs:
       - name: Display replace json
         run: |
           echo $F_TEMP_JSON
-          echo "${{ steps.replace_env.outputs.contents }}"
+          echo "${{ steps.replace_env.outputs.F_TEMP_JSON }}"
       
