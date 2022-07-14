@@ -21,14 +21,16 @@ jobs:
           path: "extensions.json"
 
       - name: Extension file contents
-        run: echo "${{ steps.read_file.outputs.contents }}"
+        run: |
+          echo "${{ steps.read_file.outputs.contents }}"
 
       - name: Replace file contents with env
+        id: replace_env
         run: |
-          F_TEMP_JSON=$(echo '{"extensions": '$(echo '${{ steps.read_file.outputs.contents }}' | perl -pe 's/\$([_A-Z]+)/$ENV{$1}/g')'}' | jq '. + {"environmentId": "${{ secrets.ENVIRONMENT_ID }}"}')
-          echo "F_TEMP_JSON - \n$F_TEMP_JSON"
+          export F_TEMP_JSON=$(echo '{"extensions": '$(echo '${{ steps.read_file.outputs.contents }}' | perl -pe 's/\$([_A-Z]+)/$ENV{$1}/g')'}' | jq '. + {"environmentId": "${{ secrets.ENVIRONMENT_ID }}"}')
       
       - name: Display replace json
         run: |
           echo $F_TEMP_JSON
+          echo "${{ steps.replace_env.outputs }}"
       
