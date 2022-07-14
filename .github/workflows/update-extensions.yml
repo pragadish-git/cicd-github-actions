@@ -37,7 +37,7 @@ jobs:
           method: 'POST'
           customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
           data: '${{ steps.update_contents.outputs.FJSON }}'
-          timeout: 30000
+          timeout: 60000
       
       - name: Show response
         run: |
