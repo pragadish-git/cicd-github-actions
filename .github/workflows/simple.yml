@@ -6,12 +6,20 @@ jobs:
   extensions-cicd:
     runs-on: ubuntu-latest
     steps:
-      - name: set env with secrets
+      - name: Set env with secrets
         uses: oNaiPs/secrets-to-env-action@v1
         with:
           secrets: ${{ toJSON(secrets) }}
-      - name: testing env
-        run: |
-          env
-          echo "Value of BOOMI_CLOUD_URL: $BOOMI_CLOUD_URL"
+      
+      - name: Checkout extension file
+        uses: actions/checkout@v3
+      
+      - name: Read file contents
+        id: read_file
+        uses: andstor/file-reader-action@v1
+        with:
+          path: "extensions.json"
+
+      - name: Extension file contents
+        run: echo "${ steps.read_file.outputs.contents }"
       
