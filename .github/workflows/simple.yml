@@ -30,6 +30,16 @@ jobs:
           echo ::set-output name=FJSON::$(echo '{"extensions": '$(echo '${{ steps.read_file.outputs.contents }}' | perl -pe 's/\$([_A-Z]+)/$ENV{$1}/g')'}' | jq '. + {"environmentId": "${{ secrets.ENVIRONMENT_ID }}"}')
       
       - name: Invoke api with json payload
-        run: |
-          echo '${{ steps.replace_env.outputs.FJSON }}'
+        id: http_call
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: 'https://c01-sg.integrate-test.boomi.com/ws/rest/queryPackagedComponent/v1/PackagedComponent/'
+          method: 'POST'
+          customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}": }'
+          data: '${{ steps.replace_env.outputs.FJSON }}'
       
+      - name: Show response
+        run: |
+          echo ${{ steps.http_call.outputs.response }}
+        # run: |
+        #   echo '${{ steps.replace_env.outputs.FJSON }}'
