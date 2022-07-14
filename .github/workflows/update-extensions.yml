@@ -1,6 +1,10 @@
 name: Test Workflow
 
-on: [push]
+on:
+  push:
+    paths:
+    - 'extensions.json'
+    - '.github/workflows/update-extensions.yml'
 
 jobs:
   extensions-cicd:
