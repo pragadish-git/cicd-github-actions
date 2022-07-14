@@ -1,10 +1,10 @@
-name: Update Environment Extensions Workflow
+name: Create Packaged Component Workflow
 
 on:
   push:
     paths:
-    - 'extensions.json'
-    - '.github/workflows/update-extensions.yml'
+    - 'packages.json'
+    - '.github/workflows/packaged-component.yml'
 
 jobs:
   extensions-cicd:
@@ -17,23 +17,23 @@ jobs:
       
       - name: Checkout extension file
         uses: actions/checkout@v3
-      
+
       - name: Read file contents
         id: read_file
         uses: andstor/file-reader-action@v1
         with:
-          path: "extensions.json"
+          path: "packages.json"
 
       - name: Update file contents
         id: update_contents
         run: |
-          echo ::set-output name=FJSON::$(echo '{"extensions": '$(echo '${{ steps.read_file.outputs.contents }}' | perl -pe 's/\$([_A-Z]+)/$ENV{$1}/g')'}' | jq '. + {"environmentId": "${{ secrets.ENVIRONMENT_ID }}"}')
+          echo ::set-output name=FJSON::$(echo '{"components": '${{ steps.read_file.outputs.contents }}'}' | jq '. + {"environmentId": "${{ secrets.ENVIRONMENT_ID }}"}')
       
       - name: Invoke api with json payload
         id: http_call
         uses: fjogeleit/http-request-action@v1
         with:
-          url: 'https://c01-sg.integrate-test.boomi.com/ws/rest/updateEnvironmentExtensions/v1/EnvironmentExtensions/'
+          url: 'https://c01-sg.integrate-test.boomi.com/ws/rest/cicdCreatePackagedComponent/v1/CicdPackagedComponent/'
           method: 'POST'
           customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
           data: '${{ steps.update_contents.outputs.FJSON }}'
