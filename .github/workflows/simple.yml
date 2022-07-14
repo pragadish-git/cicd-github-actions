@@ -25,7 +25,7 @@ jobs:
 
       - name: Replace file contents with env
         run: |
-          TEMP_JSON=$(echo "${{ steps.read_file.outputs.contents }}" | perl -pe 's/\$([_A-Z]+)/$ENV{$1}/g')
+          TEMP_JSON=$("${{ steps.read_file.outputs.contents }}" | perl -pe 's/\$([_A-Z]+)/$ENV{$1}/g')
           echo "TEMP_JSON - \n$TEMP_JSON"
           F_TEMP_JSON=$(echo '{"extensions": '$TEMP_JSON'}' | jq '. + {"environmentId": "${{ secrets.ENVIRONMENT_ID }}"}')
           echo "F_TEMP_JSON - \n$F_TEMP_JSON"
