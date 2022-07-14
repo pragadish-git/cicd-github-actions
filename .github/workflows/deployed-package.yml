@@ -27,7 +27,7 @@ jobs:
       # - name: Update file contents
       #   id: update_contents
       #   run: |
-      #     echo ::set-output name=FJSON::$(echo '{"packages": '$(echo '${{ steps.read_file.outputs.contents }}'}' | jq '. + {"environmentId": "${{ secrets.ENVIRONMENT_ID }}"}')
+      #     echo ::set-output name=FJSON::$(echo '{"packages": '$(echo '${{ steps.read_file.outputs.contents }}')'}' | jq '. + {"environmentId": "${{ secrets.ENVIRONMENT_ID }}"}')
       
       # - name: Invoke api with json payload
       #   id: http_call
