@@ -20,6 +20,15 @@ jobs:
         with:
           path: "extensions.json"
 
-      - name: Extension file contents
-        run: echo "${{ steps.read_file.outputs.contents }}"
+      #- name: Extension file contents
+      #  run: echo "${{ steps.read_file.outputs.contents }}"
+
+      - name: Replace file contents with env
+        run: |
+          TEMP_JSON=`echo "${{ steps.read_file.outputs.contents }}" | perl -pe 's/\$([_A-Z]+)/$ENV{$1}/g'`
+          REPLACE_TEMP_JSON=`echo '{"extensions": '$TEMP_JSON'}' | jq '. + {"environmentId": "${{ secrets.ENVIRONMENT_ID }}"}'`
+      
+      - name: Display replace json
+        run: |
+          echo $REPLACE_TEMP_JSON
       
