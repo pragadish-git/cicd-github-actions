@@ -7,44 +7,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: set env with secrets
+        uses: oNaiPs/secrets-to-env-action@v1
+        with:
+          secrets: ${{ toJSON(secrets) }}
+      - name: testing env
         run: |
-          while read -d $'\t' -r key value; do
-            if [[ $key == *$'\n'* ]]; then
-              echo $key'<<EOF' >> $GITHUB_ENV
-              echo "$value" >> $GITHUB_ENV
-              echo 'EOF' >> $GITHUB_ENV
-            elif [[ ! -z $key ]]; then
-              echo $key'='$value >> $GITHUB_ENV
-            fi
-          done< <(jq -j 'to_entries|.[] | "\(.key) \(.value)\t"' <<< "$SECRETS_CONTEXT")
-        env:
-          SECRETS_CONTEXT: ${{ toJson(secrets) }}
-      - name: checkout extension file
-        uses: actions/checkout@v3
-      - name: find and replace extension file
-        run: |
-          echo "INPUT JSON TEMPLATE"
-          cat extensions.json
-          perl -pe 's/\$([_A-Z]+)/$ENV{$1}/g' < extensions.json > tmp_extensions.json
-          TEMP_EXTENSION_JSON=`cat tmp_extensions.json`
-          echo '{"extensions": '$TEMP_EXTENSION_JSON'}' | jq '. + {"environmentId": "${{ secrets.ENVIRONMENT_ID }}"}' > tmp_extensions.json
-          echo "JSON FOR POST CALL"
-          cat tmp_extensions.json
-      - name: "call extension api using curl"
-        run: |
-          CURL_RESPONSE=`curl --write-out '%{http_code}' \
-          -X POST -k -s \
-          -H 'Content-Type: application/json' \
-          -H 'Accept: application/json' \
-          -H 'Authorization: Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}'  \
-          -i 'https://c01-sg.integrate-test.boomi.com/ws/rest/queryPackagedComponent/v1/PackagedComponent/' \
-          --data @tmp_extensions.json`
-
-          http_code=${CURL_RESPONSE: -3}; echo http status code - $http_code
-          content=${CURL_RESPONSE}; echo response - $content
-          if [ $http_code != "200" ] && [ $http_code != "201" ]; then
-            echo "FAILURE"
-            exit 1
-          else
-            echo "SUCCESS"
-          fi
+          env
+          echo "Value of BOOMI_CLOUD_URL: $BOOMI_CLOUD_URL"
+      
