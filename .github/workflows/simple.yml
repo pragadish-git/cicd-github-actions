@@ -20,16 +20,16 @@ jobs:
         with:
           path: "extensions.json"
 
-      - name: Extension file contents
-        run: |
-          echo "${{ steps.read_file.outputs.contents }}"
+      # - name: Extension file contents
+      #   run: |
+      #     echo "${{ steps.read_file.outputs.contents }}"
 
       - name: Replace file contents with env
         id: replace_env
         run: |
           echo ::set-output name=FJSON::$(echo '{"extensions": '$(echo '${{ steps.read_file.outputs.contents }}' | perl -pe 's/\$([_A-Z]+)/$ENV{$1}/g')'}' | jq '. + {"environmentId": "${{ secrets.ENVIRONMENT_ID }}"}')
       
-      - name: Display replace json
+      - name: Invoke api with json payload
         run: |
-          echo "${{ steps.replace_env.outputs.FJSON }}"
+          echo '${{ steps.replace_env.outputs.FJSON }}'
       
