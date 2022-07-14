@@ -27,10 +27,10 @@ jobs:
       - name: Replace file contents with env
         id: replace_env
         run: |
-          export F_TEMP_JSON=$(echo '{"extensions": '$(echo '${{ steps.read_file.outputs.contents }}' | perl -pe 's/\$([_A-Z]+)/$ENV{$1}/g')'}' | jq '. + {"environmentId": "${{ secrets.ENVIRONMENT_ID }}"}')
+          F_TEMP_JSON=$(echo '{"extensions": '$(echo '${{ steps.read_file.outputs.contents }}' | perl -pe 's/\$([_A-Z]+)/$ENV{$1}/g')'}' | jq '. + {"environmentId": "${{ secrets.ENVIRONMENT_ID }}"}')
       
       - name: Display replace json
         run: |
           echo $F_TEMP_JSON
-          echo "${{ steps.replace_env.outputs }}"
+          echo "${{ steps.replace_env.outputs.contents }}"
       
