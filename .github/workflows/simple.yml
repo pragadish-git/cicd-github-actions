@@ -37,4 +37,4 @@ jobs:
       
       - name: Show response
         run: |
-          echo ${{ steps.http_call.outputs.response }}
+          echo '${{ steps.http_call.outputs.response }}'
