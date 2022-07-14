@@ -35,9 +35,9 @@ jobs:
         with:
           url: 'https://c01-sg.integrate-test.boomi.com/ws/rest/cicdCreatePackagedComponent/v1/CicdPackagedComponent/'
           method: 'POST'
-          customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }} "}'
+          customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
           data: '${{ steps.update_contents.outputs.FJSON }}'
-          timeout: 20000
+          timeout: 30000
       
       - name: Show response
         run: |
