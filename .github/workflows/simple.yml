@@ -20,10 +20,6 @@ jobs:
         with:
           path: "extensions.json"
 
-      # - name: Extension file contents
-      #   run: |
-      #     echo "${{ steps.read_file.outputs.contents }}"
-
       - name: Replace file contents with env
         id: replace_env
         run: |
@@ -37,6 +33,7 @@ jobs:
           method: 'POST'
           customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}" }'
           data: '${{ steps.replace_env.outputs.FJSON }}'
+          timeout: 20000
       
       - name: Show response
         run: |
