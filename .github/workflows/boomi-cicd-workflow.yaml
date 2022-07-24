@@ -1,0 +1,189 @@
+# This is a workflow to manage the build and deployment of Boomi packages across different environments
+
+name: Boomi CICD Workflow
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push for the "master", "develop-*", and "release-*" branches or pull request events for the "develop-*" branch
+  push:
+    branches:
+      - "master"
+      - "develop-**"
+  #pull_request:
+  #  branches:
+  #    - "develop-**"
+  
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: environment
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  Build:
+    if: startsWith(github.event.ref,'refs/heads/master') && github.event_name == 'push'
+    # if: github.event_name == 'pull_request'
+    
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Setting environment to Common to get boomi details for packaging
+    environment:
+      name: Common
+      url: "http://common.myapp.com"
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+
+      # Build packages for the deliverables
+      - name: Build packages
+        run: echo "Building packages"
+
+      - name: Set env with secrets
+        uses: oNaiPs/secrets-to-env-action@v1
+        with:
+          secrets: ${{ toJSON(secrets) }}
+      
+      - name: Checkout extension file
+        uses: actions/checkout@v3
+
+      - name: Read file contents
+        id: read_file
+        uses: andstor/file-reader-action@v1
+        with:
+          path: "packages.json"
+
+      - name: Update file contents
+        id: update_contents
+        run: |
+          echo ::set-output name=FJSON::$(echo '{"components": '$(echo '${{ steps.read_file.outputs.contents }}')'}' | jq '. + {"environmentId": "${{ secrets.ENVIRONMENT_ID1 }}"}')
+      
+      # - name: Invoke api with json payload
+      #   id: http_call
+      #   uses: fjogeleit/http-request-action@v1
+      #   with:
+      #     url: 'https://c01-sg.integrate-test.boomi.com/ws/rest/cicdCreatePackagedComponent/v1/CicdPackagedComponent/'
+      #     method: 'POST'
+      #     customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
+      #     data: '${{ steps.update_contents.outputs.FJSON }}'
+      #     timeout: 60000
+      
+      - name: Show response
+        run: |
+          env
+          echo ENV ID : '${{ secrets.ENVIRONMENT_ID1 }}'
+          echo '${{ steps.update_contents.outputs.FJSON }}'
+
+      # Runs a set of commands using the runners shell
+      - name: Run a multi-line script
+        run: |
+          echo Add other actions to build,
+          echo and verify your packages.
+          echo Environment name is: ${{github.event.inputs.environment}}
+          echo Branch name is: ${{github.event.ref}}
+          echo ${{ startsWith(github.event.ref,'refs/heads/develop-') }}
+          echo ${{ startsWith(github.event.ref,'refs/heads/master') }}
+          echo ${{ github.event_name }}
+
+  DeployToDev:
+    name: Deploy to Dev
+    
+    if: startsWith(github.event.ref,'refs/heads/master') && github.event.inputs.environment =='Development'
+    # needs: [Build]
+    runs-on: ubuntu-latest
+
+    environment:
+      name: Development
+      url: "http://dev.myapp.com"
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+
+      # Build packages for the deliverables
+      - name: Deploying to Dev
+        run: echo "Deploying to Dev"
+
+      - name: Set env with secrets
+        uses: oNaiPs/secrets-to-env-action@v1
+        with:
+          secrets: ${{ toJSON(secrets) }}
+      
+      - name: Checkout extension file
+        uses: actions/checkout@v3
+
+      - name: Read file contents
+        id: read_file
+        uses: andstor/file-reader-action@v1
+        with:
+          path: "packages.json"
+
+      - name: Update file contents
+        id: update_contents
+        run: |
+          echo ::set-output name=FJSON::$(echo '{"components": '$(echo '${{ steps.read_file.outputs.contents }}')'}' | jq '. + {"environmentId": "${{ secrets.ENVIRONMENT_ID2 }}"}')
+      
+      # - name: Invoke api with json payload
+      #   id: http_call
+      #   uses: fjogeleit/http-request-action@v1
+      #   with:
+      #     url: 'https://c01-sg.integrate-test.boomi.com/ws/rest/cicdCreatePackagedComponent/v1/CicdPackagedComponent/'
+      #     method: 'POST'
+      #     customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
+      #     data: '${{ steps.update_contents.outputs.FJSON }}'
+      #     timeout: 60000
+      
+      - name: Show response
+        run: |
+          env
+          echo ENV ID : '${{ secrets.ENVIRONMENT_ID2 }}'
+          echo JSON IS : '${{ steps.update_contents.outputs.FJSON }}'
+
+      # Runs a set of commands using the runners shell
+      - name: Run a multi-line script
+        run: |
+          echo Add other actions to build,
+          echo and verify your packages.
+          echo Environment name is: ${{github.event.inputs.environment}}
+          echo Branch name is: ${{github.event.ref}}
+          echo ${{ startsWith(github.event.ref,'refs/heads/develop-') }}
+          echo ${{ startsWith(github.event.ref,'refs/heads/master') }}
+          echo ${{ github.event_name }}
+
+  # DeployToSIT:
+  #   name: Deploy to SIT
+  #   if: startsWith(github.event.ref,'refs/heads/master') && github.event.inputs.environment =='SIT'
+  #   # needs: [DeployToDev]
+  #   runs-on: ubuntu-latest
+  #   environment:
+  #     name: SIT
+  #     url: "http://sit.myapp.com"
+  #   steps:
+  #     - name: Deploy
+  #       run: echo I am deploying to SIT!
+
+  # DeployToUAT:
+  #   name: Deploy to UAT
+  #   if: startsWith(github.event.ref,'refs/heads/master') && github.event.inputs.environment =='UAT'
+  #   # needs: [DeployToSIT]
+  #   runs-on: ubuntu-latest
+  #   environment:
+  #     name: UAT
+  #     url: "http://uat.myapp.com"
+  #   steps:
+  #     - name: Deploy
+  #       run: echo I am deploying to UAT!
+
+  # DeployToProd:
+  #   name: Deploy to Production
+  #   if: github.event.ref == 'refs/heads/master' && github.event_name == 'push'
+  #   # needs: [DeployToUAT]
+  #   runs-on: ubuntu-latest
+  #   environment:
+  #     name: Prod
+  #     url: "http://www.myapp.com"
+  #   steps:
+  #     - name: Deploy
+  #       run: echo I am deploying to PROD!
