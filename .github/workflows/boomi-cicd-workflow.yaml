@@ -66,6 +66,7 @@ jobs:
         with:
           url: "https://${{ secrets.BOOMI_SERVER_URL }}/ws/rest/getComponentDetails/v1/ComponentDetails/"
           method: "GET"
+          customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
           #    url: 'https://c01-sg.integrate-test.boomi.com/ws/rest/cicdCreatePackagedComponent/v1/CicdPackagedComponent/'
           #    method: 'POST'
           #    customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
@@ -74,6 +75,7 @@ jobs:
 
       - name: Show response
         run: |
+          echo '${{ steps.update_contents.outputs.FJSON }}'
           echo '${{ steps.http_call.outputs.response }}'
 
       # Runs a set of commands using the runners shell
@@ -125,6 +127,7 @@ jobs:
         with:
           url: "https://${{ secrets.BOOMI_SERVER_URL }}/ws/rest/getComponentDetails/v1/ComponentDetails/"
           method: "GET"
+          customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
           #  url: 'https://c01-sg.integrate-test.boomi.com/ws/rest/cicdCreateDeployedPackage/v2/CicdDeployedPackage/'
           #  method: 'POST'
           #  customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
@@ -187,6 +190,7 @@ jobs:
         with:
           url: "https://${{ secrets.BOOMI_SERVER_URL }}/ws/rest/getComponentDetails/v1/ComponentDetails/"
           method: "GET"
+          customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
           #  url: 'https://c01-sg.integrate-test.boomi.com/ws/rest/cicdCreateDeployedPackage/v2/CicdDeployedPackage/'
           #  method: 'POST'
           #  customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
