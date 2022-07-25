@@ -165,11 +165,18 @@ jobs:
         run: |
           echo '${{ steps.update_extension_file_contents.outputs.FEJSON }}'
           echo '${{ steps.http_extension_call.outputs.response }}'
-      
+
       - name: Show changes files response
         run: |
-          echo contains(steps.changed_files.outputs.added_files, 'extensions.json')
-          echo contains(steps.changed_files.outputs.modified_files, 'extensions.json')
+          echo -------------
+          for file in ${{ steps.changed_files.outputs.modified_files }}; do
+            echo "$file was added"
+          done
+          echo -------------
+          for file in ${{ steps.changed_files.outputs.added_files }}; do
+            echo "$file was added"
+          done
+          echo -------------
 
   DeployToSIT:
     name: Deploy to SIT
