@@ -49,9 +49,10 @@ jobs:
         uses: tj-actions/changed-files@v24
       
       - name: Run step when a file changes
-        if: contains(steps.changed-files.outputs.modified_files, 'extensions.json')
         run: |
-          echo "Your my-file.txt file has been modified."
+            for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+              echo "$file was changed"
+            done
 
       - name: Read file contents
         id: read_file
