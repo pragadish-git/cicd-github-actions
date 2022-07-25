@@ -44,14 +44,15 @@ jobs:
       - name: Checkout extension file
         uses: actions/checkout@v3
 
-      - name: Get changed files using defaults
-        id: verify-changed-files
-        uses: tj-actions/verify-changed-files@v10
-      
-      - name: Run step when a file changes
-        if: contains(steps.verify-changed-files.outputs.changed_files, 'extensions.json')
+      - name: Check file existence
+        id: check_extension_file
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "extensions.json"
+
+      - name: Does extension file exists
         run: |
-          echo "extensions.json has changed."
+          echo '${{ steps.check_extension_file.outputs.files_exists }}'
 
       - name: Read file contents
         id: read_file
@@ -138,25 +139,34 @@ jobs:
           echo '${{ steps.update_contents.outputs.FJSON }}'
           echo '${{ steps.http_call.outputs.response }}'
 
-      - name: Get changed files using defaults
-        id: changed_files
-        uses: tj-actions/changed-files@v24
+      # - name: Get changed files using defaults
+      #   id: changed_files
+      #   uses: tj-actions/changed-files@v24
+
+      - name: Check file existence
+        id: check_extension_file
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "extensions.json"
 
       - name: Read extension file contents
-        if: contains(steps.changed_files.outputs.modified_files, 'extensions.json')
+        # if: contains(steps.changed_files.outputs.modified_files, 'extensions.json')
+        if: steps.check_extension_file.outputs.files_exists == 'true'
         id: read_extension_file
         uses: andstor/file-reader-action@v1
         with:
           path: "extensions.json"
 
       - name: Update extension file contents
-        if: contains(steps.changed_files.outputs.modified_files, 'extensions.json')
+        # if: contains(steps.changed_files.outputs.modified_files, 'extensions.json')
+        if: steps.check_extension_file.outputs.files_exists == 'true'
         id: update_extension_file_contents
         run: |
           echo ::set-output name=FEJSON::$(echo '{"extensions": '$(echo '${{ steps.read_extension_file.outputs.contents }}' | perl -pe 's/\$([_A-Z]+)/$ENV{$1}/g')'}' | jq '. + {"environmentId": "${{ secrets.BOOMI_ENVIRONMENT_ID }}"}')
 
       - name: Invoke extension api
-        if: contains(steps.changed_files.outputs.modified_files, 'extensions.json')
+        # if: contains(steps.changed_files.outputs.modified_files, 'extensions.json')
+        if: steps.check_extension_file.outputs.files_exists == 'true'
         id: http_extension_call
         uses: fjogeleit/http-request-action@v1
         with:
@@ -170,22 +180,23 @@ jobs:
           timeout: 60000
 
       - name: Show extension response
-        if: contains(steps.changed_files.outputs.modified_files, 'extensions.json')
+        # if: contains(steps.changed_files.outputs.modified_files, 'extensions.json')
+        if: steps.check_extension_file.outputs.files_exists == 'true'
         run: |
           echo '${{ steps.update_extension_file_contents.outputs.FEJSON }}'
           echo '${{ steps.http_extension_call.outputs.response }}'
 
-      - name: Show changes files response
-        run: |
-          echo -------------
-          for file in ${{ steps.changed_files.outputs.modified_files }}; do
-            echo "$file was added"
-          done
-          echo -------------
-          for file in ${{ steps.changed_files.outputs.added_files }}; do
-            echo "$file was added"
-          done
-          echo -------------
+      # - name: Show changes files response
+      #   run: |
+      #     echo -------------
+      #     for file in ${{ steps.changed_files.outputs.modified_files }}; do
+      #       echo "$file was added"
+      #     done
+      #     echo -------------
+      #     for file in ${{ steps.changed_files.outputs.added_files }}; do
+      #       echo "$file was added"
+      #     done
+      #     echo -------------
 
   DeployToSIT:
     name: Deploy to SIT
