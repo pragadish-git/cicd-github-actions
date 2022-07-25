@@ -144,8 +144,6 @@ jobs:
         if: contains(steps.changed_files.outputs.modified_files, 'extensions.json')
         id: update_extension_file_contents
         run: |
-          echo contains(steps.changed_files.outputs.added_files, 'extensions.json')
-          echo contains(steps.changed_files.outputs.modified_files, 'extensions.json')
           echo ::set-output name=FEJSON::$(echo '{"extensions": '$(echo '${{ steps.read_extension_file.outputs.contents }}' | perl -pe 's/\$([_A-Z]+)/$ENV{$1}/g')'}' | jq '. + {"environmentId": "${{ secrets.BOOMI_ENVIRONMENT_ID }}"}')
 
       - name: Invoke extension api
@@ -167,6 +165,11 @@ jobs:
         run: |
           echo '${{ steps.update_extension_file_contents.outputs.FEJSON }}'
           echo '${{ steps.http_extension_call.outputs.response }}'
+      
+      - name: Show changes files response
+        run: |
+          echo contains(steps.changed_files.outputs.added_files, 'extensions.json')
+          echo contains(steps.changed_files.outputs.modified_files, 'extensions.json')
 
   DeployToSIT:
     name: Deploy to SIT
