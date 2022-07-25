@@ -170,8 +170,8 @@ jobs:
         with:
           secrets: ${{ toJSON(secrets) }}
 
-      # - name: Checkout extension file
-      #   uses: actions/checkout@v3
+      - name: Checkout extension file
+        uses: actions/checkout@v3
 
       - name: Read file contents
         id: read_file
