@@ -83,13 +83,6 @@ jobs:
           echo '${{ steps.update_contents.outputs.FJSON }}'
           echo '${{ steps.http_call.outputs.response }}'
 
-      # Runs a set of commands using the runners shell
-      # - name: Run a multi-line script
-      #   run: |
-      #     echo ${{ startsWith(github.event.ref,'refs/heads/develop-') }}
-      #     echo ${{ startsWith(github.event.ref,'refs/heads/master') }}
-      #     echo ${{ github.event_name }}
-
   DeployToDev:
     name: Deploy to Dev
 
@@ -127,7 +120,7 @@ jobs:
         with:
           url: "https://${{ secrets.BOOMI_SERVER_URL }}/ws/rest/getComponentDetails/v1/ComponentDetails/"
           method: "GET"
-          customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
+          customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN1 }}"}'
           #  url: 'https://c01-sg.integrate-test.boomi.com/ws/rest/cicdCreateDeployedPackage/v2/CicdDeployedPackage/'
           #  method: 'POST'
           #  customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
@@ -138,10 +131,6 @@ jobs:
         run: |
           echo '${{ steps.update_contents.outputs.FJSON }}'
           echo '${{ steps.http_call.outputs.response }}'
-
-      # - name: Get changed files using defaults
-      #   id: changed_files
-      #   uses: tj-actions/changed-files@v24
 
       - name: Check file existence
         id: check_extension_file
@@ -185,18 +174,6 @@ jobs:
         run: |
           echo '${{ steps.update_extension_file_contents.outputs.FEJSON }}'
           echo '${{ steps.http_extension_call.outputs.response }}'
-
-      # - name: Show changes files response
-      #   run: |
-      #     echo -------------
-      #     for file in ${{ steps.changed_files.outputs.modified_files }}; do
-      #       echo "$file was added"
-      #     done
-      #     echo -------------
-      #     for file in ${{ steps.changed_files.outputs.added_files }}; do
-      #       echo "$file was added"
-      #     done
-      #     echo -------------
 
   DeployToSIT:
     name: Deploy to SIT
