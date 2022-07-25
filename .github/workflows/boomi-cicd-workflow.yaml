@@ -35,13 +35,8 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-
       # Build packages for the deliverables
-      - name: Build packages
-        run: echo "Building packages"
-
-      - name: Set env with secrets
+      - name: Set environment variables
         uses: oNaiPs/secrets-to-env-action@v1
         with:
           secrets: ${{ toJSON(secrets) }}
@@ -60,7 +55,7 @@ jobs:
         run: |
           echo ::set-output name=FJSON::$(echo '{"components": '$(echo '${{ steps.read_file.outputs.contents }}')'}' | jq '. + {"environmentId": "${{ secrets.BOOMI_ENVIRONMENT_ID }}"}')
 
-      - name: Invoke api with json payload
+      - name: Building components on ${{ github.event.inputs.environment }}
         id: http_call
         uses: fjogeleit/http-request-action@v1
         with:
@@ -96,18 +91,13 @@ jobs:
     #  url: "http://dev.myapp.com"
 
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-
       # Deploy packages to environment
-      - name: Deploying to Dev
-        run: echo "Deploying to Dev"
-
-      - name: Set env with secrets
+      - name: Started deployment
         uses: oNaiPs/secrets-to-env-action@v1
         with:
           secrets: ${{ toJSON(secrets) }}
 
-      - name: Checkout extension file
+      - name: Checkout
         uses: actions/checkout@v3
 
       - name: Read file contents
@@ -121,7 +111,7 @@ jobs:
         run: |
           echo ::set-output name=FJSON::$(echo '{"packages": '$(echo '${{ steps.read_file.outputs.contents }}')'}' | jq '. + {"environmentId": "${{ secrets.BOOMI_ENVIRONMENT_ID }}"}')
 
-      - name: Invoke api with json payload
+      - name: Deploying packages to ${{ github.event.inputs.environment }}
         id: http_call
         uses: fjogeleit/http-request-action@v1
         with:
@@ -134,21 +124,49 @@ jobs:
           #  data: '${{ steps.update_contents.outputs.FJSON }}'
           timeout: 60000
 
-      - name: Show response
+      - name: Show deployment response
         run: |
           echo '${{ steps.update_contents.outputs.FJSON }}'
           echo '${{ steps.http_call.outputs.response }}'
 
-      # Runs a set of commands using the runners shell
-      # - name: Run a multi-line script
-      #   run: |
-      #     echo Add other actions to build,
-      #     echo and verify your packages.
-      #     echo Environment name is: ${{github.event.inputs.environment}}
-      #     echo Branch name is: ${{github.event.ref}}
-      #     echo ${{ startsWith(github.event.ref,'refs/heads/develop-') }}
-      #     echo ${{ startsWith(github.event.ref,'refs/heads/master') }}
-      #     echo ${{ github.event_name }}
+      - name: Get changed files using defaults
+        id: changed_files
+        uses: tj-actions/changed-files@v24
+
+      - name: Read extension file contents
+        if: contains(steps.changed_files.outputs.modified_files, 'extensions.json')
+        id: read_extension_file
+        uses: andstor/file-reader-action@v1
+        with:
+          path: "extensions.json"
+
+      - name: Update extension file contents
+        if: contains(steps.changed_files.outputs.modified_files, 'extensions.json')
+        id: update_extension_file_contents
+        run: |
+          echo contains(steps.changed_files.outputs.added_files, 'extensions.json')
+          echo contains(steps.changed_files.outputs.modified_files, 'extensions.json')
+          echo ::set-output name=FEJSON::$(echo '{"extensions": '$(echo '${{ steps.read_extension_file.outputs.contents }}' | perl -pe 's/\$([_A-Z]+)/$ENV{$1}/g')'}' | jq '. + {"environmentId": "${{ secrets.BOOMI_ENVIRONMENT_ID }}"}')
+
+      - name: Invoke extension api
+        if: contains(steps.changed_files.outputs.modified_files, 'extensions.json')
+        id: http_extension_call
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: "https://${{ secrets.BOOMI_SERVER_URL }}/ws/rest/getComponentDetails/v1/ComponentDetails/"
+          method: "GET"
+          customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
+          # url: "https://c01-sg.integrate-test.boomi.com/ws/rest/updateEnvironmentExtensions/v1/EnvironmentExtensions/"
+          # method: "POST"
+          # customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
+          # data: "${{ steps.update_extension_file_contents.outputs.FEJSON }}"
+          timeout: 60000
+
+      - name: Show extension response
+        if: contains(steps.changed_files.outputs.modified_files, 'extensions.json')
+        run: |
+          echo '${{ steps.update_extension_file_contents.outputs.FEJSON }}'
+          echo '${{ steps.http_extension_call.outputs.response }}'
 
   DeployToSIT:
     name: Deploy to SIT
@@ -162,15 +180,12 @@ jobs:
 
     steps:
       # Deploy packages to environment
-      - name: Deploying to '${{ github.event.inputs.environment }}'
-        run: echo "Deploying to Dev"
-
-      - name: Set env with secrets
+      - name: Set environment variables
         uses: oNaiPs/secrets-to-env-action@v1
         with:
           secrets: ${{ toJSON(secrets) }}
 
-      - name: Checkout extension file
+      - name: Checkout
         uses: actions/checkout@v3
 
       - name: Read file contents
@@ -184,7 +199,7 @@ jobs:
         run: |
           echo ::set-output name=FJSON::$(echo '{"packages": '$(echo '${{ steps.read_file.outputs.contents }}')'}' | jq '. + {"environmentId": "${{ secrets.BOOMI_ENVIRONMENT_ID }}"}')
 
-      - name: Invoke api with json payload
+      - name: Deploying packages to ${{ github.event.inputs.environment }}
         id: http_call
         uses: fjogeleit/http-request-action@v1
         with:
@@ -197,7 +212,7 @@ jobs:
           #  data: '${{ steps.update_contents.outputs.FJSON }}'
           timeout: 60000
 
-      - name: Show response
+      - name: Show deployment response
         run: |
           echo '${{ steps.update_contents.outputs.FJSON }}'
           echo '${{ steps.http_call.outputs.response }}'
