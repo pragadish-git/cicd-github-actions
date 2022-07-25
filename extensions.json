@@ -17,10 +17,7 @@
     "type": "connection",
     "name": "Boomi Cloud",
     "id": "password",
-    "value": "$BOOMI_CLOUD_PASSWORD123",
+    "value": "$BOOMI_CLOUD_PASSWORD",
     "encrypt": true
-  }
-
-
-
+  }  
 ]
