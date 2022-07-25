@@ -44,6 +44,15 @@ jobs:
       - name: Checkout extension file
         uses: actions/checkout@v3
 
+      - name: Get changed files using defaults
+        id: changed-files
+        uses: tj-actions/changed-files@v24
+      
+      - name: Run step when a file changes
+        if: contains(steps.changed-files.outputs.modified_files, 'extensions.json')
+        run: |
+          echo "Your my-file.txt file has been modified."
+
       - name: Read file contents
         id: read_file
         uses: andstor/file-reader-action@v1

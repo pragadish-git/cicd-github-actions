@@ -20,5 +20,6 @@
     "value": "$BOOMI_CLOUD_PASSWORD",
     "encrypt": true
   }
+
   
 ]
