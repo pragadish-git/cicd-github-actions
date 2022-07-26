@@ -67,7 +67,7 @@ jobs:
 
       - name: Building components on ${{ github.event.inputs.environment }}
         id: http_call
-        uses: fjogeleit/http-request-action@v1
+        uses: fjogeleit/http-request-action@v1.10.0
         with:
           url: "https://${{ secrets.BOOMI_SERVER_URL }}/ws/rest/getComponentDetails/v1/ComponentDetails/"
           method: "GET"
@@ -116,11 +116,11 @@ jobs:
 
       - name: Deploying packages to ${{ github.event.inputs.environment }}
         id: http_call
-        uses: fjogeleit/http-request-action@v1
+        uses: fjogeleit/http-request-action@v1.10.0
         with:
           url: "https://${{ secrets.BOOMI_SERVER_URL }}/ws/rest/getComponentDetails/v1/ComponentDetails/"
           method: "GET"
-          customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN1 }}"}'
+          customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
           #  url: 'https://c01-sg.integrate-test.boomi.com/ws/rest/cicdCreateDeployedPackage/v2/CicdDeployedPackage/'
           #  method: 'POST'
           #  customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
@@ -157,7 +157,7 @@ jobs:
         # if: contains(steps.changed_files.outputs.modified_files, 'extensions.json')
         if: steps.check_extension_file.outputs.files_exists == 'true'
         id: http_extension_call
-        uses: fjogeleit/http-request-action@v1
+        uses: fjogeleit/http-request-action@v1.10.0
         with:
           url: "https://${{ secrets.BOOMI_SERVER_URL }}/ws/rest/getComponentDetails/v1/ComponentDetails/"
           method: "GET"
@@ -208,7 +208,7 @@ jobs:
 
       - name: Deploying packages to ${{ github.event.inputs.environment }}
         id: http_call
-        uses: fjogeleit/http-request-action@v1
+        uses: fjogeleit/http-request-action@v1.10.0
         with:
           url: "https://${{ secrets.BOOMI_SERVER_URL }}/ws/rest/getComponentDetails/v1/ComponentDetails/"
           method: "GET"
