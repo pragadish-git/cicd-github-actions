@@ -11,12 +11,14 @@ on:
       - "develop-**"
     paths-ignore:
       - '**.md'
+      - 'extensions.json'
       - 'images/**'
   pull_request:
     branches:
       - "master"
     paths-ignore:
       - '**.md'
+      - 'extensions.json'
       - 'images/**'
 
   # Allows you to run this workflow manually from the Actions tab
