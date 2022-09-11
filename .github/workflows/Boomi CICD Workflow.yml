@@ -80,27 +80,10 @@ jobs:
         run: |
           echo ::set-output name=FJSON::$(echo '{"components": '$(echo '${{ steps.read_file.outputs.contents }}')'}')
 
-      - name: Package components # on ${{ github.event.inputs.environment }}
-        if: steps.check_packages_file.outputs.files_exists == 'true'
-        id: http_call
-        uses: fjogeleit/http-request-action@v1.10.0
-        with:
-          # url: "https://${{ secrets.BOOMI_SERVER_URL }}/ws/rest/getComponentDetails/v1/ComponentDetails/"
-          # method: "GET"
-          # customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
-          # url: 'https://c01-sg.integrate-test.boomi.com/ws/rest/cicdCreatePackagedComponent/v1/CicdPackagedComponent/'
-          # url: 'https://${{ secrets.BOOMI_SERVER_URL }}/ws/rest/cicdCreatePackagedComponent/v1/CicdPackagedComponent/'
-          url: 'https://${{ secrets.BOOMI_SERVER_URL }}/ws/simple/createCicdPackagedComponent'
-          method: 'POST'
-          customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
-          data: '${{ steps.update_contents.outputs.FJSON }}'
-          timeout: 60000
-
-      - name: Show response
+      - name: Display contents
         if: steps.check_packages_file.outputs.files_exists == 'true'
         run: |
-          echo '${{ steps.update_contents.outputs.FJSON }}'
-          echo '${{ steps.http_call.outputs.response }}'
+          echo ${{ steps.update_contents.outputs.FJSON }}
 
   DeployToDev:
     name: Deploy to Dev
@@ -141,70 +124,10 @@ jobs:
         run: |
           echo ::set-output name=FJSON::$(echo '{"packages": '$(echo '${{ steps.read_file.outputs.contents }}')'}' | jq '. + {"environmentId": "${{ secrets.BOOMI_ENVIRONMENT_ID }}"}')
 
-      - name: Invoke deployment api - ${{ github.event.inputs.environment }}
-        if: steps.check_packages_file.outputs.files_exists == 'true'
-        id: http_call
-        uses: fjogeleit/http-request-action@v1.10.0
-        with:
-          # url: "https://${{ secrets.BOOMI_SERVER_URL }}/ws/rest/getComponentDetails/v1/ComponentDetails/"
-          # method: "GET"
-          # customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
-          # url: 'https://${{ secrets.BOOMI_SERVER_URL }}/ws/rest/cicdCreateDeployedPackage/v2/CicdDeployedPackage/'
-          url: 'https://${{ secrets.BOOMI_SERVER_URL }}/ws/simple/createCicdDeployedPackage'
-          method: 'POST'
-          customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
-          data: '${{ steps.update_contents.outputs.FJSON }}'
-          timeout: 60000
-
-      - name: Show deployment response
+      - name: Display contents
         if: steps.check_packages_file.outputs.files_exists == 'true'
         run: |
-          echo '${{ steps.update_contents.outputs.FJSON }}'
-          echo '${{ steps.http_call.outputs.response }}'
-
-      - name: Check extension file existence
-        id: check_extension_file
-        uses: andstor/file-existence-action@v1
-        with:
-          files: "extensions.json"
-
-      - name: Read extension file contents
-        # if: contains(steps.changed_files.outputs.modified_files, 'extensions.json')
-        if: steps.check_extension_file.outputs.files_exists == 'true'
-        id: read_extension_file
-        uses: andstor/file-reader-action@v1
-        with:
-          path: "extensions.json"
-
-      - name: Update extension file contents
-        # if: contains(steps.changed_files.outputs.modified_files, 'extensions.json')
-        if: steps.check_extension_file.outputs.files_exists == 'true'
-        id: update_extension_file_contents
-        run: |
-          echo ::set-output name=FEJSON::$(echo '{"extensions": '$(echo '${{ steps.read_extension_file.outputs.contents }}' | perl -pe 's/\$([_A-Z]+)/$ENV{$1}/g')'}' | jq '. + {"environmentId": "${{ secrets.BOOMI_ENVIRONMENT_ID }}"}')
-
-      - name: Invoke extension api - ${{ github.event.inputs.environment }}
-        # if: contains(steps.changed_files.outputs.modified_files, 'extensions.json')
-        if: steps.check_extension_file.outputs.files_exists == 'true'
-        id: http_extension_call
-        uses: fjogeleit/http-request-action@v1.10.0
-        with:
-          # url: "https://${{ secrets.BOOMI_SERVER_URL }}/ws/rest/getComponentDetails/v1/ComponentDetails/"
-          # method: "GET"
-          # customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
-          # url: "https://${{ secrets.BOOMI_SERVER_URL }}/ws/rest/updateEnvironmentExtensions/v1/EnvironmentExtensions/"
-          url: "https://${{ secrets.BOOMI_SERVER_URL }}/ws/simple/updateEnvironmentExtensions"
-          method: "POST"
-          customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
-          data: "${{ steps.update_extension_file_contents.outputs.FEJSON }}"
-          timeout: 60000
-
-      - name: Show extension response
-        # if: contains(steps.changed_files.outputs.modified_files, 'extensions.json')
-        if: steps.check_extension_file.outputs.files_exists == 'true'
-        run: |
-          echo '${{ steps.update_extension_file_contents.outputs.FEJSON }}'
-          echo '${{ steps.http_extension_call.outputs.response }}'
+          echo ${{ steps.update_contents.outputs.FJSON }}
 
   DeployToSIT:
     name: Deploy to SIT
@@ -245,68 +168,10 @@ jobs:
         run: |
           echo ::set-output name=FJSON::$(echo '{"packages": '$(echo '${{ steps.read_file.outputs.contents }}')'}' | jq '. + {"environmentId": "${{ secrets.BOOMI_ENVIRONMENT_ID }}"}')
 
-      - name: Invoke deployment api - ${{ github.event.inputs.environment }}
-        if: steps.check_packages_file.outputs.files_exists == 'true'
-        id: http_call
-        uses: fjogeleit/http-request-action@v1.10.0
-        with:
-          # url: "https://${{ secrets.BOOMI_SERVER_URL }}/ws/rest/getComponentDetails/v1/ComponentDetails/"
-          # method: "GET"
-          # customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
-          url: 'https://${{ secrets.BOOMI_SERVER_URL }}/ws/simple/createCicdDeployedPackage'
-          method: 'POST'
-          customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
-          data: '${{ steps.update_contents.outputs.FJSON }}'
-          timeout: 60000
-
-      - name: Show deployment response
+      - name: Display contents
         if: steps.check_packages_file.outputs.files_exists == 'true'
         run: |
-          echo '${{ steps.update_contents.outputs.FJSON }}'
-          echo '${{ steps.http_call.outputs.response }}'
-
-      - name: Check extension file existence
-        id: check_extension_file
-        uses: andstor/file-existence-action@v1
-        with:
-          files: "extensions.json"
-
-      - name: Read extension file contents
-        # if: contains(steps.changed_files.outputs.modified_files, 'extensions.json')
-        if: steps.check_extension_file.outputs.files_exists == 'true'
-        id: read_extension_file
-        uses: andstor/file-reader-action@v1
-        with:
-          path: "extensions.json"
-
-      - name: Update extension file contents
-        # if: contains(steps.changed_files.outputs.modified_files, 'extensions.json')
-        if: steps.check_extension_file.outputs.files_exists == 'true'
-        id: update_extension_file_contents
-        run: |
-          echo ::set-output name=FEJSON::$(echo '{"extensions": '$(echo '${{ steps.read_extension_file.outputs.contents }}' | perl -pe 's/\$([_A-Z]+)/$ENV{$1}/g')'}' | jq '. + {"environmentId": "${{ secrets.BOOMI_ENVIRONMENT_ID }}"}')
-
-      - name: Invoke extension api - ${{ github.event.inputs.environment }}
-        # if: contains(steps.changed_files.outputs.modified_files, 'extensions.json')
-        if: steps.check_extension_file.outputs.files_exists == 'true'
-        id: http_extension_call
-        uses: fjogeleit/http-request-action@v1.10.0
-        with:
-          # url: "https://${{ secrets.BOOMI_SERVER_URL }}/ws/rest/getComponentDetails/v1/ComponentDetails/"
-          # method: "GET"
-          # customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
-          url: "https://${{ secrets.BOOMI_SERVER_URL }}/ws/simple/updateEnvironmentExtensions"
-          method: "POST"
-          customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
-          data: "${{ steps.update_extension_file_contents.outputs.FEJSON }}"
-          timeout: 60000
-
-      - name: Show extension response
-        # if: contains(steps.changed_files.outputs.modified_files, 'extensions.json')
-        if: steps.check_extension_file.outputs.files_exists == 'true'
-        run: |
-          echo '${{ steps.update_extension_file_contents.outputs.FEJSON }}'
-          echo '${{ steps.http_extension_call.outputs.response }}'
+          echo ${{ steps.update_contents.outputs.FJSON }}
 
   DeployToUAT:
     name: Deploy to UAT
@@ -347,68 +212,10 @@ jobs:
         run: |
           echo ::set-output name=FJSON::$(echo '{"packages": '$(echo '${{ steps.read_file.outputs.contents }}')'}' | jq '. + {"environmentId": "${{ secrets.BOOMI_ENVIRONMENT_ID }}"}')
 
-      - name: Invoke deployment api - ${{ github.event.inputs.environment }}
-        if: steps.check_packages_file.outputs.files_exists == 'true'
-        id: http_call
-        uses: fjogeleit/http-request-action@v1.10.0
-        with:
-          # url: "https://${{ secrets.BOOMI_SERVER_URL }}/ws/rest/getComponentDetails/v1/ComponentDetails/"
-          # method: "GET"
-          # customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
-          url: 'https://${{ secrets.BOOMI_SERVER_URL }}/ws/simple/createCicdDeployedPackage'
-          method: 'POST'
-          customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
-          data: '${{ steps.update_contents.outputs.FJSON }}'
-          timeout: 60000
-
-      - name: Show deployment response
+      - name: Display contents
         if: steps.check_packages_file.outputs.files_exists == 'true'
         run: |
-          echo '${{ steps.update_contents.outputs.FJSON }}'
-          echo '${{ steps.http_call.outputs.response }}'
-
-      - name: Check extension file existence
-        id: check_extension_file
-        uses: andstor/file-existence-action@v1
-        with:
-          files: "extensions.json"
-
-      - name: Read extension file contents
-        # if: contains(steps.changed_files.outputs.modified_files, 'extensions.json')
-        if: steps.check_extension_file.outputs.files_exists == 'true'
-        id: read_extension_file
-        uses: andstor/file-reader-action@v1
-        with:
-          path: "extensions.json"
-
-      - name: Update extension file contents
-        # if: contains(steps.changed_files.outputs.modified_files, 'extensions.json')
-        if: steps.check_extension_file.outputs.files_exists == 'true'
-        id: update_extension_file_contents
-        run: |
-          echo ::set-output name=FEJSON::$(echo '{"extensions": '$(echo '${{ steps.read_extension_file.outputs.contents }}' | perl -pe 's/\$([_A-Z]+)/$ENV{$1}/g')'}' | jq '. + {"environmentId": "${{ secrets.BOOMI_ENVIRONMENT_ID }}"}')
-
-      - name: Invoke extension api - ${{ github.event.inputs.environment }}
-        # if: contains(steps.changed_files.outputs.modified_files, 'extensions.json')
-        if: steps.check_extension_file.outputs.files_exists == 'true'
-        id: http_extension_call
-        uses: fjogeleit/http-request-action@v1.10.0
-        with:
-          # url: "https://${{ secrets.BOOMI_SERVER_URL }}/ws/rest/getComponentDetails/v1/ComponentDetails/"
-          # method: "GET"
-          # customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
-          url: "https://${{ secrets.BOOMI_SERVER_URL }}/ws/simple/updateEnvironmentExtensions"
-          method: "POST"
-          customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
-          data: "${{ steps.update_extension_file_contents.outputs.FEJSON }}"
-          timeout: 60000
-
-      - name: Show extension response
-        # if: contains(steps.changed_files.outputs.modified_files, 'extensions.json')
-        if: steps.check_extension_file.outputs.files_exists == 'true'
-        run: |
-          echo '${{ steps.update_extension_file_contents.outputs.FEJSON }}'
-          echo '${{ steps.http_extension_call.outputs.response }}'
+          echo ${{ steps.update_contents.outputs.FJSON }}
 
   DeployToProd:
   #   name: Deploy to Prod
@@ -453,65 +260,7 @@ jobs:
           echo ::set-output name=FJSON::$(echo '{"packages": '$(echo '${{ steps.read_file.outputs.contents }}')'}' | jq '. + {"environmentId": "${{ secrets.BOOMI_ENVIRONMENT_ID }}"}')
           echo '${{ github.event_name }}'
 
-      - name: Invoke deployment api - ${{ github.event.inputs.environment }}
-        if: steps.check_packages_file.outputs.files_exists == 'true'
-        id: http_call
-        uses: fjogeleit/http-request-action@v1.10.0
-        with:
-          # url: "https://${{ secrets.BOOMI_SERVER_URL }}/ws/rest/getComponentDetails/v1/ComponentDetails/"
-          # method: "GET"
-          # customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
-          url: 'https://${{ secrets.BOOMI_SERVER_URL }}/ws/simple/createCicdDeployedPackage'
-          method: 'POST'
-          customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
-          data: '${{ steps.update_contents.outputs.FJSON }}'
-          timeout: 60000
-
-      - name: Show deployment response
+      - name: Display contents
         if: steps.check_packages_file.outputs.files_exists == 'true'
         run: |
-          echo '${{ steps.update_contents.outputs.FJSON }}'
-          echo '${{ steps.http_call.outputs.response }}'
-
-      - name: Check extension file existence
-        id: check_extension_file
-        uses: andstor/file-existence-action@v1
-        with:
-          files: "extensions.json"
-
-      - name: Read extension file contents
-        # if: contains(steps.changed_files.outputs.modified_files, 'extensions.json')
-        if: steps.check_extension_file.outputs.files_exists == 'true'
-        id: read_extension_file
-        uses: andstor/file-reader-action@v1
-        with:
-          path: "extensions.json"
-
-      - name: Update extension file contents
-        # if: contains(steps.changed_files.outputs.modified_files, 'extensions.json')
-        if: steps.check_extension_file.outputs.files_exists == 'true'
-        id: update_extension_file_contents
-        run: |
-          echo ::set-output name=FEJSON::$(echo '{"extensions": '$(echo '${{ steps.read_extension_file.outputs.contents }}' | perl -pe 's/\$([_A-Z]+)/$ENV{$1}/g')'}' | jq '. + {"environmentId": "${{ secrets.BOOMI_ENVIRONMENT_ID }}"}')
-
-      - name: Invoke extension api - ${{ github.event.inputs.environment }}
-        # if: contains(steps.changed_files.outputs.modified_files, 'extensions.json')
-        if: steps.check_extension_file.outputs.files_exists == 'true'
-        id: http_extension_call
-        uses: fjogeleit/http-request-action@v1.10.0
-        with:
-          # url: "https://${{ secrets.BOOMI_SERVER_URL }}/ws/rest/getComponentDetails/v1/ComponentDetails/"
-          # method: "GET"
-          # customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
-          url: "https://${{ secrets.BOOMI_SERVER_URL }}/ws/simple/updateEnvironmentExtensions"
-          method: "POST"
-          customHeaders: '{"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Basic ${{ secrets.BOOMI_CLOUD_USER_TOKEN }}"}'
-          data: "${{ steps.update_extension_file_contents.outputs.FEJSON }}"
-          timeout: 60000
-
-      - name: Show extension response
-        # if: contains(steps.changed_files.outputs.modified_files, 'extensions.json')
-        if: steps.check_extension_file.outputs.files_exists == 'true'
-        run: |
-          echo '${{ steps.update_extension_file_contents.outputs.FEJSON }}'
-          echo '${{ steps.http_extension_call.outputs.response }}'
+          echo ${{ steps.update_contents.outputs.FJSON }}
