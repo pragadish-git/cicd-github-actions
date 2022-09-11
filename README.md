@@ -13,7 +13,7 @@ This document discusses the Boomi CICD reference implementation and provides tec
 
   1.  Create a new branch from master of github repository https://github.com/newscorp-ghfb/ncau-icoe-integration-boomi-common.
         
-      <p align="center"><img src="./images/Create%20New%20Branch%20From%20Master.JPG" /></p>
+      <p align="center"><img src="./images/Create%20New%20Branch%20From%20Master.jpg" /></p>
 
         **NOTE** - Create the branch name with prefix develop-* (example: **develop-release-3.4**)
 
