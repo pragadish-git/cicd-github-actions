@@ -47,5 +47,5 @@
         "fieldId": "password",
         "fieldValue": "$BT_SF_PWD",
         "encrypt": true
-    }
+    } 
 ]
