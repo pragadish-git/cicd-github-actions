@@ -91,7 +91,7 @@ jobs:
     name: Deploy to Dev
 
     if: startsWith(github.event.ref,'refs/heads/develop-') && github.event.inputs.environment =='Development'
-    # needs: [Build]
+    needs: [Build]
     runs-on: ubuntu-latest
 
     environment: Development
@@ -135,7 +135,7 @@ jobs:
     name: Deploy to SIT
 
     if: startsWith(github.event.ref,'refs/heads/develop-') && github.event.inputs.environment =='SIT'
-    # needs: [DeployToDev]
+    needs: [DeployToDev]
     runs-on: ubuntu-latest
 
     environment: SIT
@@ -179,7 +179,7 @@ jobs:
     name: Deploy to UAT
 
     if: startsWith(github.event.ref,'refs/heads/develop-') && github.event.inputs.environment =='UAT'
-    # needs: [DeployToDev]
+    needs: [DeployToDev]
     runs-on: ubuntu-latest
 
     environment: UAT
@@ -226,7 +226,7 @@ jobs:
     name: Deploy to Prod
 
     if: startsWith(github.event.ref,'refs/heads/master') && ( github.event_name == 'push' || github.event_name == 'pull_request' || github.event_name == 'merge' )
-    # needs: [DeployToDev]
+    needs: [DeployToDev]
     runs-on: ubuntu-latest
 
     environment: Prod
