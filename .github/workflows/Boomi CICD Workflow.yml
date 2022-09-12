@@ -1,6 +1,6 @@
 # This is a workflow to manage the build and deployment of Boomi packages across different environments
 
-name: Boomi CICD Workflow
+# name: Boomi CICD Workflow
 
 # Controls when the workflow will run
 on:
