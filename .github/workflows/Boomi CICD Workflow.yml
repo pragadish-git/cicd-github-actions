@@ -96,13 +96,13 @@ jobs:
           docker volume create --opt type=none --opt device=/opt/sonarqube --opt o=bind ${volume}
           echo "1 - Iamhere"
           docker ps
-          docker run --name boomisonar -p 9000:9000 --volume ${volume}:/opt/sonarqube -d -t boomicicd/sonar:latest
+          docker run --name boomisonar -p 9000:9000 --volume ${volume}:/opt/sonarqube -d -t boomicicd/sonar:latest >/dev/null 2>&1
           docker port boomisonar
           echo "2 - Iamsleeping"
-          sleep 60
-          curl -kv http://localhost:9000
+          sleep 30
+          curl -ks http://localhost:9000
           curl -s https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.0.0.702-linux.zip -o sonar-scanner-cli-3.0.0.702-linux.zip
-          unzip sonar-scanner-cli-3.0.0.702-linux.zip
+          unzip -qq sonar-scanner-cli-3.0.0.702-linux.zip
           chmod -R 755 sonar-scanner-3.0.0.702-linux
           export PATH=${PATH}:/home/runner/work/cicd-github-actions/cicd-github-actions/sonar-scanner-3.0.0.702-linux/bin
           echo ${PATH}
