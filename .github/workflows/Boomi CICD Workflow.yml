@@ -102,10 +102,25 @@ jobs:
           sleep 60
           pwd
           curl -kv http://localhost:9000
-          # pwd
+          echo "-"
+          echo "-"
           curl -s https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.0.0.702-linux.zip -o sonar-scanner-cli-3.0.0.702-linux.zip
+          ls -lrt
+          echo "-"
+          echo "-"
           unzip sonar-scanner-cli-3.0.0.702-linux.zip
+          ls -lrt
+          echo "-"
+          echo "-"
+          chmod -R 755 sonar-scanner-cli-3.0.0.702-linux
+          ls -lrt
+          echo "-"
+          echo "-"
+          echo ${PATH}
           export PATH=${PATH}:/home/runner/work/cicd-github-actions/cicd-github-actions/sonar-scanner-cli-3.0.0.702-linux/bin
+          echo "-"
+          echo "-"
+          echo ${PATH}
           sonar-scanner --version
           
   DeployToDev:
