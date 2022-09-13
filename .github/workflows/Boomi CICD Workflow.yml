@@ -31,8 +31,8 @@ on:
 jobs:
   # This workflow contains a single job called "build"
   Build:
-    #if: (startsWith(github.event.ref,'refs/heads/master') || startsWith(github.event.ref,'refs/heads/develop-')) && github.event_name == 'push'
-    if: startsWith(github.event.ref,'refs/heads/develop-') && github.event_name == 'push'
+    if: (startsWith(github.event.ref,'refs/heads/master') || startsWith(github.event.ref,'refs/heads/develop-')) && github.event_name == 'push'
+    # if: startsWith(github.event.ref,'refs/heads/develop-') && github.event_name == 'push'
     # if: github.event_name == 'pull_request'
 
     # The type of runner that the job will run on
@@ -86,11 +86,17 @@ jobs:
         if: steps.check_packages_file.outputs.files_exists == 'true'
         run: |
           echo ${{ steps.update_contents.outputs.FJSON }}
+          
+      - name: Display contents
+        if: steps.check_packages_file.outputs.files_exists == 'true'
+        run: |
+          docker --version
 
   DeployToDev:
     name: Deploy to Dev
 
-    if: startsWith(github.event.ref,'refs/heads/develop-') && github.event.inputs.environment =='Development'
+    if: (startsWith(github.event.ref,'refs/heads/master') || startsWith(github.event.ref,'refs/heads/develop-')) && github.event_name == 'push'
+    # if: startsWith(github.event.ref,'refs/heads/develop-') && github.event.inputs.environment =='Development'
     needs: [Build]
     runs-on: ubuntu-latest
 
@@ -134,7 +140,8 @@ jobs:
   DeployToSIT:
     name: Deploy to SIT
 
-    if: startsWith(github.event.ref,'refs/heads/develop-') && github.event.inputs.environment =='SIT'
+    if: (startsWith(github.event.ref,'refs/heads/master') || startsWith(github.event.ref,'refs/heads/develop-')) && github.event_name == 'push'
+    # if: startsWith(github.event.ref,'refs/heads/develop-') && github.event.inputs.environment =='SIT'
     needs: [DeployToDev]
     runs-on: ubuntu-latest
 
@@ -178,7 +185,8 @@ jobs:
   DeployToUAT:
     name: Deploy to UAT
 
-    if: startsWith(github.event.ref,'refs/heads/develop-') && github.event.inputs.environment =='UAT'
+    if: (startsWith(github.event.ref,'refs/heads/master') || startsWith(github.event.ref,'refs/heads/develop-')) && github.event_name == 'push'
+    # if: startsWith(github.event.ref,'refs/heads/develop-') && github.event.inputs.environment =='UAT'
     needs: [DeployToDev]
     runs-on: ubuntu-latest
 
