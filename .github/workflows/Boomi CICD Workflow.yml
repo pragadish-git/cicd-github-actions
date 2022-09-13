@@ -104,13 +104,10 @@ jobs:
           curl -s https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.0.0.702-linux.zip -o sonar-scanner-cli-3.0.0.702-linux.zip
           unzip sonar-scanner-cli-3.0.0.702-linux.zip
           chmod -R 755 sonar-scanner-3.0.0.702-linux
-          echo "-"
-          echo "-"
           export PATH=${PATH}:/home/runner/work/cicd-github-actions/cicd-github-actions/sonar-scanner-3.0.0.702-linux/bin
-          echo "-"
-          echo "-"
           echo ${PATH}
           sonar-scanner --version
+          sonar-scanner -Dsonar.projectKey=BoomiSonar -Dsonar.sources=. -Dsonar.host.url=http://localhost:9000 -Dsonar.login=82e12d4fcdfd583f963e680c63dd85d441c738e8
           
   DeployToDev:
     name: Deploy to Dev
