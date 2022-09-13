@@ -96,11 +96,12 @@ jobs:
           docker volume create --opt type=none --opt device=/opt/sonarqube --opt o=bind ${volume}
           echo "1 - Iamhere"
           docker ps
+          netstat -a | grep 9000
           docker run --name boomisonar -p 9000:9000 --volume ${volume}:/opt/sonarqube -d -t boomicicd/sonar:latest
-          docker ps
+          netstat -a | grep 9000
           echo "2 - Iamhere"
           pwd
-          # curl http://localhost:9000
+          curl -kv http://localhost:9000
           # pwd
           cd /
           ls -lrt
