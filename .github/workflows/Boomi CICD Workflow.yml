@@ -103,8 +103,10 @@ jobs:
           pwd
           curl -kv http://localhost:9000
           # pwd
-          cd /
-          ls -lrt
+          curl -s https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.0.0.702-linux.zip -o sonar-scanner-cli-3.0.0.702-linux.zip
+          unzip sonar-scanner-cli-3.0.0.702-linux.zip
+          export PATH=${PATH}:/home/runner/work/cicd-github-actions/cicd-github-actions/sonar-scanner-cli-3.0.0.702-linux/bin
+          sonar-scanner --version
           
   DeployToDev:
     name: Deploy to Dev
