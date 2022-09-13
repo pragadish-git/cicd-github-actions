@@ -95,6 +95,8 @@ jobs:
           volume="sonar_vol"
           docker volume create --opt type=none --opt device=/opt/sonarqube --opt o=bind ${volume}
           docker run --name boomisonar -p 9000:9000 --volume ${volume}:/opt/sonarqube -d -t boomicicd/sonar:latest
+          echo "Iamhere"
+          pwd
           curl http://localhost:9000
           pwd
           cd /
